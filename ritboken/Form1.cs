@@ -14,7 +14,7 @@ namespace ritboken
     {
         private bool isDrawing = false;     // En flagga som indikerar om användaren är i färd med att rita eller inte.
         private Point previousPoint;        // Håller koll på den tidigare muspositionen för att rita linjer.
-        
+
         // Deklarera en bitmap för att lagra ritområdet
         private Bitmap drawingSurface = new Bitmap(800, 600);
         public Form1()
