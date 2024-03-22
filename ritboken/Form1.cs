@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace ritboken
 {
@@ -17,9 +19,15 @@ namespace ritboken
 
         // Deklarera en bitmap för att lagra ritområdet
         private Bitmap drawingSurface = new Bitmap(800, 600);
+
+        // ange defualt inställningar till ritmetoderna och dess färg
+        Color color = Color.Black;
+        private int penWidth;
+        private BaseDraw selectedDraw;
         public Form1()
         {
             InitializeComponent();
+            selectedDraw = new BaseDraw(color, penWidth);
 
             // Kör metoden för att skapa ett ritområdet genom att rensa det till vit färg
             InitializeDrawingSurface();
@@ -48,7 +56,7 @@ namespace ritboken
             {
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
-                    new BaseDraw(Color.Black, 4).draw(e, previousPoint, g);
+                    selectedDraw.draw(e, previousPoint, g);
 
                 }
 
@@ -69,6 +77,33 @@ namespace ritboken
         {
             // Rita ritområdet på PictureBox
             e.Graphics.DrawImage(drawingSurface, Point.Empty);
+        }
+
+        private void sizeTxtBox_TextChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(sizeTxtBox.Text, out var size))
+            {
+                penWidth = size;
+                selectedDraw.width = size;
+            }
+        }
+
+        private void clearBtn_Click(object sender, EventArgs e)
+        {
+            pxbPapper.Image = null;
+            drawingSurface = new Bitmap(800, 600);
+            InitializeDrawingSurface();
+
+        }
+
+        private void colorSelector_Click(object sender, EventArgs e)
+        {
+            ColorDialog dialog = new ColorDialog();
+            dialog.Color = color;
+            if (dialog.ShowDialog() == DialogResult.OK)
+                color = dialog.Color;
+            selectedDraw.color = color;
+
         }
     }
 }

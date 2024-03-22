@@ -9,8 +9,8 @@ namespace ritboken
 {
     internal class BaseDraw
     {
-        Color color;
-        int width;
+        public Color color;
+        public int width;
         Pen pen;
 
         public BaseDraw(Color color, int width)
@@ -26,10 +26,11 @@ namespace ritboken
         public void draw(MouseEventArgs e, Point prevLocation, Graphics g) {
             
                 // Skapa en penna med svart färg och tjocklek 4
-                Pen pen = new Pen(Color.Black, 4);
+                Pen pen = new Pen(color, width);
 
                 // Rita en linje från föregående musposition till nuvarande musposition med den svarta pennan
                 g.DrawLine(pen, prevLocation, e.Location);
+                
             
         }
     }
