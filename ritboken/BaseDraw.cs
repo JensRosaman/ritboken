@@ -26,12 +26,13 @@ namespace ritboken
         public void draw(MouseEventArgs e, Point prevLocation, Graphics g) {
             
                 // Skapa en penna med svart färg och tjocklek 4
-                Pen pen = new Pen(color, width);
+              Pen pen = new Pen(color, width);
 
-                // Rita en linje från föregående musposition till nuvarande pos
-                g.DrawLine(pen, prevLocation, e.Location);
-                
-            
+            // Rita en linje från föregående musposition till nuvarande pos
+            //  g.DrawLine(pen, prevLocation, e.Location);
+            g.DrawEllipse(pen, prevLocation.X, prevLocation.Y, e.Location.X - prevLocation.X , e.Location.Y - prevLocation.Y);
+
+
         }
     }
 }

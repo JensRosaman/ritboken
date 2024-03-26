@@ -37,6 +37,8 @@
             LineBtn = new Button();
             penBtn = new Button();
             SaveBtn = new Button();
+            squareBtn = new Button();
+            ellipseBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)pxbPapper).BeginInit();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -105,7 +107,7 @@
             // 
             // penBtn
             // 
-            penBtn.Location = new Point(184, 19);
+            penBtn.Location = new Point(136, 12);
             penBtn.Name = "penBtn";
             penBtn.Size = new Size(112, 34);
             penBtn.TabIndex = 4;
@@ -123,11 +125,33 @@
             SaveBtn.UseVisualStyleBackColor = true;
             SaveBtn.Click += SaveBtn_Click;
             // 
+            // squareBtn
+            // 
+            squareBtn.Location = new Point(368, 12);
+            squareBtn.Name = "squareBtn";
+            squareBtn.Size = new Size(112, 34);
+            squareBtn.TabIndex = 6;
+            squareBtn.Text = "Kvadrat";
+            squareBtn.UseVisualStyleBackColor = true;
+            squareBtn.Click += squareBtn_Click;
+            // 
+            // ellipseBtn
+            // 
+            ellipseBtn.Location = new Point(250, 12);
+            ellipseBtn.Name = "ellipseBtn";
+            ellipseBtn.Size = new Size(112, 34);
+            ellipseBtn.TabIndex = 7;
+            ellipseBtn.Text = "Ellipse";
+            ellipseBtn.UseVisualStyleBackColor = true;
+            ellipseBtn.Click += ellipseBtn_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(ellipseBtn);
+            Controls.Add(squareBtn);
             Controls.Add(SaveBtn);
             Controls.Add(penBtn);
             Controls.Add(LineBtn);
@@ -152,5 +176,7 @@
         private Button LineBtn;
         private Button penBtn;
         private Button SaveBtn;
+        private Button squareBtn;
+        private Button ellipseBtn;
     }
 }

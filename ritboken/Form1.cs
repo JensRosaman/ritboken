@@ -41,7 +41,9 @@ namespace ritboken
             {
                 g.Clear(Color.White);
             }
+            
         }
+
 
         // Händelsehanterare som aktiveras när användaren klickar ned musknappen för att börja rita.
         private void pxbPapper_MouseDown(object sender, MouseEventArgs e)
@@ -54,18 +56,13 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren rör musen och ritningen pågår.
         private void pxbPapper_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing && !(this.selectedDraw is Line))
+            if (isDrawing && !(this.selectedDraw is Line | this.selectedDraw is Ellipse))
             {
-                LineBtn.BackColor = Color.Pink;
-
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
                     selectedDraw.draw(e, previousPoint, g);
-
                 }
-
                 previousPoint = e.Location;
-
                 // Uppdatera PictureBox för att visa de ändringar som gjorts på ritområdet
                 pxbPapper.Invalidate();
             }
@@ -74,9 +71,8 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren släpper musknappen.
         private void pxbPapper_MouseUp(object sender, MouseEventArgs e)
         {
-            if (isDrawing && (this.selectedDraw is Line))
+            if (isDrawing && (this.selectedDraw is Line | this.selectedDraw is Ellipse))
             {
-                LineBtn.BackColor = Color.Pink;
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
                     selectedDraw.draw(e, previousPoint, g);
@@ -106,7 +102,6 @@ namespace ritboken
             pxbPapper.Image = null;
             drawingSurface = new Bitmap(800, 600);
             InitializeDrawingSurface();
-
         }
 
         private void colorSelector_Click(object sender, EventArgs e)
@@ -122,7 +117,6 @@ namespace ritboken
         private void LineBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = new Line(selectedDraw.color, selectedDraw.width);
-
         }
 
         private void penBtn_Click(object sender, EventArgs e)
@@ -132,9 +126,18 @@ namespace ritboken
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
-            string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
+            string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 DateTime.Now.ToString("HH:mm:ss") + ".png"
                 );
+        }
+
+        private void squareBtn_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void ellipseBtn_Click(object sender, EventArgs e)
+        {
+            selectedDraw = new Ellipse(selectedDraw.color, selectedDraw.Width);
         }
     }
 }
