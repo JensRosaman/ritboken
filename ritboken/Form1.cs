@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Drawing.Imaging;
 
 namespace ritboken
 {
@@ -45,6 +46,7 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren klickar ned musknappen för att börja rita.
         private void pxbPapper_MouseDown(object sender, MouseEventArgs e)
         {
+
             isDrawing = true;                   // Användaren har börjat rita                
             previousPoint = e.Location;         // Sparar positionen där muspekaren befann sig när ritningen påbörjades i previousPoint 
         }
@@ -52,8 +54,10 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren rör musen och ritningen pågår.
         private void pxbPapper_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing)
+            if (isDrawing && !(this.selectedDraw is Line))
             {
+                LineBtn.BackColor = Color.Pink;
+
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
                     selectedDraw.draw(e, previousPoint, g);
@@ -70,6 +74,15 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren släpper musknappen.
         private void pxbPapper_MouseUp(object sender, MouseEventArgs e)
         {
+            if (isDrawing && (this.selectedDraw is Line))
+            {
+                LineBtn.BackColor = Color.Pink;
+                using (Graphics g = Graphics.FromImage(drawingSurface))
+                {
+                    selectedDraw.draw(e, previousPoint, g);
+                    pxbPapper.Invalidate();
+                }
+            }
             isDrawing = false;          // Användaren har slutat rita och släppt musknappen
         }
 
@@ -104,6 +117,24 @@ namespace ritboken
                 color = dialog.Color;
             selectedDraw.color = color;
 
+        }
+
+        private void LineBtn_Click(object sender, EventArgs e)
+        {
+            selectedDraw = new Line(selectedDraw.color, selectedDraw.width);
+
+        }
+
+        private void penBtn_Click(object sender, EventArgs e)
+        {
+            selectedDraw = new BaseDraw(selectedDraw.color, selectedDraw.Width);
+        }
+
+        private void SaveBtn_Click(object sender, EventArgs e)
+        {
+            string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), 
+                DateTime.Now.ToString("HH:mm:ss") + ".png"
+                );
         }
     }
 }

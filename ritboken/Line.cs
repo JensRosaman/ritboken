@@ -15,7 +15,7 @@ namespace ritboken
 
         public void draw(MouseEventArgs e, Point prevLocation, Graphics g)
         {
-
+            g.DrawLine(new Pen(color,width),new Point(100,100), e.Location);
         }
     }
 }

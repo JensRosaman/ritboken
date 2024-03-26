@@ -34,6 +34,9 @@
             colorSelector = new Button();
             sizeTxtBox = new TextBox();
             clearBtn = new Button();
+            LineBtn = new Button();
+            penBtn = new Button();
+            SaveBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)pxbPapper).BeginInit();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -82,7 +85,7 @@
             // 
             // clearBtn
             // 
-            clearBtn.Location = new Point(22, 13);
+            clearBtn.Location = new Point(12, 404);
             clearBtn.Name = "clearBtn";
             clearBtn.Size = new Size(112, 34);
             clearBtn.TabIndex = 2;
@@ -90,11 +93,44 @@
             clearBtn.UseVisualStyleBackColor = true;
             clearBtn.Click += clearBtn_Click;
             // 
+            // LineBtn
+            // 
+            LineBtn.Location = new Point(18, 12);
+            LineBtn.Name = "LineBtn";
+            LineBtn.Size = new Size(112, 34);
+            LineBtn.TabIndex = 3;
+            LineBtn.Text = "Linje";
+            LineBtn.UseVisualStyleBackColor = true;
+            LineBtn.Click += LineBtn_Click;
+            // 
+            // penBtn
+            // 
+            penBtn.Location = new Point(184, 19);
+            penBtn.Name = "penBtn";
+            penBtn.Size = new Size(112, 34);
+            penBtn.TabIndex = 4;
+            penBtn.Text = "Penna";
+            penBtn.UseVisualStyleBackColor = true;
+            penBtn.Click += penBtn_Click;
+            // 
+            // SaveBtn
+            // 
+            SaveBtn.Location = new Point(147, 404);
+            SaveBtn.Name = "SaveBtn";
+            SaveBtn.Size = new Size(112, 34);
+            SaveBtn.TabIndex = 5;
+            SaveBtn.Text = "Spara";
+            SaveBtn.UseVisualStyleBackColor = true;
+            SaveBtn.Click += SaveBtn_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(SaveBtn);
+            Controls.Add(penBtn);
+            Controls.Add(LineBtn);
             Controls.Add(clearBtn);
             Controls.Add(groupBox1);
             Controls.Add(pxbPapper);
@@ -113,5 +149,8 @@
         private TextBox sizeTxtBox;
         private Button clearBtn;
         private Button colorSelector;
+        private Button LineBtn;
+        private Button penBtn;
+        private Button SaveBtn;
     }
 }

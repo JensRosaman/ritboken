@@ -28,11 +28,10 @@ namespace ritboken
                 // Skapa en penna med svart färg och tjocklek 4
                 Pen pen = new Pen(color, width);
 
-                // Rita en linje från föregående musposition till nuvarande musposition med den svarta pennan
+                // Rita en linje från föregående musposition till nuvarande pos
                 g.DrawLine(pen, prevLocation, e.Location);
                 
             
         }
     }
-
 }
