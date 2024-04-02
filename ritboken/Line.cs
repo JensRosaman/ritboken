@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 
 namespace ritboken
 {
-    internal class Line : BaseDraw
+    internal class Line : PostDrawBase
     {
         public Line(Color color, int width) : base(color, width)
         {
 
         }
 
-        public void draw(MouseEventArgs e, Point prevLocation, Graphics g)
+        public override void Draw(MouseEventArgs e, Point prevLocation, Graphics g)
         {
             g.DrawLine(new Pen(color,width),prevLocation, e.Location);
+        }
+
+        public override void DrawPreview(Graphics g)
+        {
+            g.DrawLine(base.pen,mouseDownLoc,currMouseLoc);
         }
     }
 }

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace ritboken
 {
-    internal class Ellipse : BaseDraw
+    internal class Ellipse : PostDrawBase
     {
         public Ellipse(Color color, int width) : base(color, width)
         {
         }
 
-        public void draw(MouseEventArgs e, Point prevLocation, Graphics g)
+        public override void Draw(MouseEventArgs e, Point prevLocation, Graphics g)
         {
 
             int x = Math.Min(prevLocation.X, e.Location.X);
@@ -23,6 +23,11 @@ namespace ritboken
 
             g.DrawEllipse(new Pen(color, width), x, y, width, height);
 
+        }
+
+        public override void DrawPreview(Graphics g)
+        {
+            g.DrawLine(base.pen, mouseDownLoc, currMouseLoc);
         }
     }
 }
