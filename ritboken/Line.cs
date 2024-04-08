@@ -15,7 +15,7 @@ namespace ritboken
 
         public override void Draw(MouseEventArgs e, Point prevLocation, Graphics g)
         {
-            g.DrawLine(new Pen(color,width),prevLocation, e.Location);
+            g.DrawLine(pen,prevLocation, e.Location);
         }
 
         public override void DrawPreview(Graphics g)

@@ -19,31 +19,71 @@ namespace ritboken
     {
         private bool isDrawing = false;     // En flagga som indikerar om användaren är i färd med att rita eller inte.
         private Point previousPoint;        // Håller koll på den tidigare muspositionen för att rita linjer.
-
-        // Deklarera en bitmap för att lagra ritområdet
-        private Bitmap drawingSurface = new Bitmap(800, 600);
-
-        // ange defualt inställningar till ritmetoderna och dess färg
-        Color color = Color.Black;
-        private int penWidth;
-        private DrawBase selectedDraw;
-        public Graphics drawingGraphics;
+        private Bitmap drawingSurface;// Deklarera en bitmap för att lagra ritområdet
+        private Bitmap oldDrawingsurface; // sparar de gamla tillståndet av bitmapen
+        private Color _color = Color.Black;
         private Dictionary<string, DrawBase> drawingModes = new Dictionary<string, DrawBase> { }; // genom att spara alla objekt så sparas även deras inställningar ex bredd osv
+        private bool syncSettings = true; // synca som standard
+        private int penWidth; // heter penWidth i den här klassen då det finns flera andra saker som bredd kan tyda på i den här kontexten
+        private DrawBase _selectedDraw;
+
+        private DrawBase selectedDraw
+        {
+            get { return _selectedDraw; }
+            set
+            {
+                _selectedDraw = value;
+                if (syncSettings)
+                {
+                    _selectedDraw.color = color;
+                    _selectedDraw.width = penWidth;
+                }
+            }
+        }
+
+        private Color color
+        {
+            set
+            {
+                _color = value;
+                if (syncSettings)
+                {
+                    foreach (DrawBase db in drawingModes.Values)
+                    {
+                        if (!(db is BucketTool)) db.color = _color; // hinken bör stanna som samma färg då man annars kan råka ändra bakgrundsfärgen av mistag
+                    }
+                }
+                else
+                {
+                    selectedDraw.color = value;
+                }
+
+            }
+            get { return _color; }
+        }
+
         public Form()
         {
             this.Text = "Coolt ritprogram";
             this.DoubleBuffered = true;
+            this.BackColor = Color.AliceBlue;
 
             InitializeComponent();
             drawingSurface = new Bitmap(pxbPapper.Width, pxbPapper.Height);
-            drawingModes["pen"] = new DrawBase(color, penWidth);
+            drawingModes["pen"] = new PenTool(color, penWidth);
             drawingModes["ellipse"] = new Ellipse(color, penWidth);
+            drawingModes["rectangle"] = new RectangleTool(color, penWidth);
+            drawingModes["line"] = new Line(color, penWidth);
+            drawingModes["bucket"] = new BucketTool(Color.White, penWidth);
 
+            // anger färg till färg knapprna
+            colorbtn1.BackColor = Color.Black;
+            colorbtn2.BackColor = Color.Blue;
+            colorbtn3.BackColor = Color.Red;
+            colorbtn4.BackColor = Color.Green;
+            colorBtn5.BackColor = Color.Yellow;
 
             selectedDraw = drawingModes["pen"]; // börja rita med penna
-            drawingGraphics = Graphics.FromImage(drawingSurface);
-            drawingGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
 
             // Kör metoden för att skapa ett ritområdet genom att rensa det till vit färg
             InitializeDrawingSurface();
@@ -56,9 +96,7 @@ namespace ritboken
             {
                 g.Clear(Color.White);
             }
-
         }
-
 
         // Händelsehanterare som aktiveras när användaren klickar ned musknappen för att börja rita.
         private void pxbPapper_MouseDown(object sender, MouseEventArgs e)
@@ -67,11 +105,19 @@ namespace ritboken
             isDrawing = true;                  // Användaren har börjat rita                
             previousPoint = e.Location;       // Sparar positionen där muspekaren befann sig när ritningen påbörjades i previousPoint 
 
-            if( selectedDraw is PostDrawBase)
+            if (selectedDraw is PostDrawBase)
             {
-
-                PostDrawBase pdb = (PostDrawBase) selectedDraw;
+                PostDrawBase pdb = (PostDrawBase)selectedDraw;
                 pdb.mouseDownLoc = previousPoint;
+                oldDrawingsurface = (Bitmap)drawingSurface.Clone(); //new Bitmap(drawingSurface.Width,drawingSurface.Height , Graphics.FromImage(drawingSurface));
+            }
+            else
+            {
+                using (Graphics g = Graphics.FromImage(drawingSurface))
+                {
+                    selectedDraw.Draw(e, new Point(e.Location.X + 1, e.Location.Y + 1), g); //Pennor ritar så fort man rör pappret -> rita prick
+                }
+
             }
         }
 
@@ -79,63 +125,64 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren rör musen och ritningen pågår.
         private void pxbPapper_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing && !(this.selectedDraw is PostDrawBase))
-            {
-                using (Graphics g = Graphics.FromImage(drawingSurface))
-                {
-                    selectedDraw.Draw(e, previousPoint, drawingGraphics);
-
-                }
-                previousPoint = e.Location;
-                // Uppdatera PictureBox för att visa de ändringar som gjorts på ritområdet
-                
-            }
-            else if (isDrawing && selectedDraw is PostDrawBase)
-            {
-                // gör preview
-                
-                PostDrawBase pbd = (PostDrawBase)selectedDraw;
-                using (Graphics g = Graphics.FromImage(drawingSurface))
-                {
-                    pbd.DrawPreview(g);                }
-                
-            }
-            pxbPapper.Invalidate();
-        }
-
-        // Händelsehanterare som aktiveras när användaren släpper musknappen.
-        private void pxbPapper_MouseUp(object sender, MouseEventArgs e)
-        {
-            this.Cursor= Cursors.Default;
-            if (isDrawing && (this.selectedDraw is Line | this.selectedDraw is Ellipse))
+            if (isDrawing && !(this.selectedDraw is PostDrawBase)) // pen liknade verktyg ingen preview behövs
             {
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
                     selectedDraw.Draw(e, previousPoint, g);
-                    pxbPapper.Invalidate();
                 }
+                previousPoint = e.Location;
+
+            }
+
+            else if (isDrawing && selectedDraw is PostDrawBase)
+            {
+                // gör preview
+                drawingSurface = (Bitmap)oldDrawingsurface.Clone(); // gå tillbaka till de gamla utseendet innan en preview ritades
+                PostDrawBase pbd = (PostDrawBase)selectedDraw; // type casta till rätt klass så rätt funktionalitet blir tillgänglig
+                using (Graphics g = Graphics.FromImage(drawingSurface))
+                {
+                    pbd.currMouseLoc = pbd.mouseDownLoc;
+                    pxbPapper.Invalidate();
+                    pbd.currMouseLoc = e.Location;
+                    pbd.DrawPreview(g);
+                }
+            }
+
+
+            pxbPapper.Invalidate(); // Uppdatera PictureBox för att visa de ändringar som gjorts på ritområdet
+        }
+
+        private void pxbPapper_MouseUp(object sender, MouseEventArgs e) // Händelsehanterare som aktiveras när användaren släpper musknappen.
+
+        {
+            this.Cursor = Cursors.Default;
+
+            if (isDrawing && selectedDraw is PostDrawBase)
+            {
+                using (Graphics g = Graphics.FromImage(drawingSurface))
+                {
+                    selectedDraw.Draw(e, previousPoint, g);
+                }
+                pxbPapper.Invalidate();
             }
             else if (isDrawing && selectedDraw is PostDrawBase)
             {
                 PostDrawBase pbx = (PostDrawBase)selectedDraw; // gillar det inte men den klagar annars
-                pbx.currMouseLoc = pbx.mouseDownLoc = new Point(0,0);
+                pbx.currMouseLoc = pbx.mouseDownLoc = new Point(0, 0);
             }
-            isDrawing = false;          // Användaren har slutat rita och släppt musknappen
+            isDrawing = false; // Användaren har slutat rita och släppt musknappen
         }
 
         private void pxbPapper_Paint(object sender, PaintEventArgs e)
         {
-            // Rita ritområdet på PictureBox
-            e.Graphics.DrawImage(drawingSurface, Point.Empty);
+            e.Graphics.DrawImage(drawingSurface, Point.Empty); // Rita ritområdet på PictureBox
         }
 
         private void sizeTxtBox_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(sizeTxtBox.Text, out var size))
-            {
-                penWidth = size;
-                selectedDraw.width = size;
-            }
+            penWidth = (int)sizeInp.Value;
+            selectedDraw.width = penWidth;
         }
 
         private void clearBtn_Click(object sender, EventArgs e)
@@ -143,7 +190,7 @@ namespace ritboken
             InitializeDrawingSurface();
             using (Graphics g = Graphics.FromImage(drawingSurface))
             {
-                g.Clear(Color.White);
+                g.Clear(drawingModes["bucket"].color);
             }
             pxbPapper.Invalidate();
         }
@@ -154,13 +201,12 @@ namespace ritboken
             dialog.Color = color;
             if (dialog.ShowDialog() == DialogResult.OK)
                 color = dialog.Color;
-            selectedDraw.color = color;
 
         }
 
         private void LineBtn_Click(object sender, EventArgs e)
         {
-            selectedDraw = new Line(selectedDraw.color, selectedDraw.width);
+            selectedDraw = drawingModes["line"];
         }
 
         private void penBtn_Click(object sender, EventArgs e)
@@ -170,20 +216,104 @@ namespace ritboken
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
-            string filename = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.MyPictures),
-                DateTime.Now.ToString("HH:mm:ss") + ".png"
-                );
-            drawingSurface.Save("bild.png", ImageFormat.Png);
+            string path;
+            string filename = $"{(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds}.png"; // skapar en unik sträng så att inga dubbletter förekommer och att inga bilder ersätts i onödan
+
+            try
+            {
+                path = Path.Combine(filePathTxtbx.Text, filename);
+                drawingSurface.Save(path, ImageFormat.Png);
+                MessageBox.Show("Bild sparad!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            catch (Exception ex)
+            {
+
+                DialogResult result = MessageBox.Show("Givna sökvägen funkade inte, vill du spara till bilder?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    path = Path.Combine(Environment.GetFolderPath(
+                                    Environment.SpecialFolder.MyPictures),
+                                    filename
+                                    );
+                    drawingSurface.Save(path, ImageFormat.Png);
+                }
+
+            }
         }
 
         private void squareBtn_Click(object sender, EventArgs e)
         {
+            selectedDraw = drawingModes["rectangle"];
         }
 
         private void ellipseBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["ellipse"];
+        }
+
+        private void fillShapeChckbx_Click(object sender, EventArgs e)
+        {
+            foreach (DrawBase drawOption in drawingModes.Values)
+            {
+                if (drawOption is PostDrawBase)
+                {
+                    PostDrawBase pbx = (PostDrawBase)drawOption;
+                    pbx.fillShapes = !pbx.fillShapes;
+                }
+            }
+        }
+
+        private void colorbtn1_Click(object sender, EventArgs e)
+        {
+            color = colorbtn1.BackColor;
+        }
+
+        private void colorbtn2_Click(object sender, EventArgs e)
+        {
+            color = colorbtn2.BackColor;
+
+        }
+
+        private void colorbtn3_Click(object sender, EventArgs e)
+        {
+            color = colorbtn3.BackColor;
+
+        }
+
+        private void colorbtn4_Click(object sender, EventArgs e)
+        {
+            color = colorbtn4.BackColor;
+
+        }
+
+        private void roundEdgesChckbx_Click(object sender, EventArgs e)
+        {
+            RectangleTool pbx = (RectangleTool)drawingModes["rectangle"];
+            pbx.smoothEdges = !pbx.smoothEdges;
+        }
+
+        private void syncChckbx_CheckedChanged(object sender, EventArgs e)
+        {
+            syncSettings = !syncSettings;
+        }
+
+        private void colorBtn5_Click(object sender, EventArgs e)
+        {
+            color = colorBtn5.BackColor;
+        }
+
+        private void eraserBtn_Click(object sender, EventArgs e)
+        {
+
+            selectedDraw = new PenTool(drawingModes["bucket"].color, penWidth); // skapa ny penna sy den inte synkas med de andra inställningarna oavsett vad
+            selectedDraw.color = drawingModes["bucket"].color;
+        }
+
+        private void backColorBtn_Click(object sender, EventArgs e)
+        {
+            selectedDraw = drawingModes["bucket"];
         }
     }
 }

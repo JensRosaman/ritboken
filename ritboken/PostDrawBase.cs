@@ -10,7 +10,7 @@ namespace ritboken
     {
         public Point mouseDownLoc;
         public Point currMouseLoc;
-        
+        public bool fillShapes = false;
         public PostDrawBase(Color color,int width) : base(color,width) { }
 
 
