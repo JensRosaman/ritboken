@@ -104,12 +104,12 @@ namespace ritboken
             this.Cursor = Cursors.Hand;
             isDrawing = true;                  // Användaren har börjat rita                
             previousPoint = e.Location;       // Sparar positionen där muspekaren befann sig när ritningen påbörjades i previousPoint 
+            oldDrawingsurface = (Bitmap)drawingSurface.Clone(); // Spara hur det såg ut innan anv började rita
 
             if (selectedDraw is PostDrawBase)
             {
                 PostDrawBase pdb = (PostDrawBase)selectedDraw;
                 pdb.mouseDownLoc = previousPoint;
-                oldDrawingsurface = (Bitmap)drawingSurface.Clone(); //new Bitmap(drawingSurface.Width,drawingSurface.Height , Graphics.FromImage(drawingSurface));
             }
             else
             {
@@ -216,31 +216,12 @@ namespace ritboken
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
-            string path;
-            string filename = $"{(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds}.png"; // skapar en unik sträng så att inga dubbletter förekommer och att inga bilder ersätts i onödan
-
-            try
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                path = Path.Combine(filePathTxtbx.Text, filename);
-                drawingSurface.Save(path, ImageFormat.Png);
-                MessageBox.Show("Bild sparad!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                drawingSurface.Save(saveFileDialog.FileName + ".png", ImageFormat.Png);
             }
-            catch (Exception ex)
-            {
-
-                DialogResult result = MessageBox.Show("Givna sökvägen funkade inte, vill du spara till bilder?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
-                {
-                    path = Path.Combine(Environment.GetFolderPath(
-                                    Environment.SpecialFolder.MyPictures),
-                                    filename
-                                    );
-                    drawingSurface.Save(path, ImageFormat.Png);
-                }
-
-            }
+            
         }
 
         private void squareBtn_Click(object sender, EventArgs e)
@@ -315,6 +296,24 @@ namespace ritboken
         {
             selectedDraw = drawingModes["bucket"];
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                drawingSurface = new Bitmap(fileDialog.FileName);
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            drawingSurface = (Bitmap)oldDrawingsurface.Clone();
+        }
+
+        
+        
     }
 }
 
