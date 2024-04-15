@@ -50,7 +50,7 @@ namespace ritboken
                 {
                     foreach (DrawBase db in drawingModes.Values)
                     {
-                        if (!(db is BucketTool)) db.color = _color; // hinken bör stanna som samma färg då man annars kan råka ändra bakgrundsfärgen av mistag
+                        if (!(db is BackgroundTool)) db.color = _color; // hinken bör stanna som samma färg då man annars kan råka ändra bakgrundsfärgen av mistag
                     }
                 }
                 else
@@ -74,8 +74,8 @@ namespace ritboken
             drawingModes["ellipse"] = new Ellipse(color, penWidth);
             drawingModes["rectangle"] = new RectangleTool(color, penWidth);
             drawingModes["line"] = new Line(color, penWidth);
-            drawingModes["bucket"] = new BucketTool(Color.White, penWidth);
-
+            drawingModes["bucket"] = new BucketTool(color, penWidth);
+            drawingModes["backColor"] = new BackgroundTool(Color.White, penWidth);
             // anger färg till färg knapprna
             colorbtn1.BackColor = Color.Black;
             colorbtn2.BackColor = Color.Blue;
@@ -111,12 +111,17 @@ namespace ritboken
                 PostDrawBase pdb = (PostDrawBase)selectedDraw;
                 pdb.mouseDownLoc = previousPoint;
             }
-            else
+            else if (!(selectedDraw is BucketTool))
             {
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
                     selectedDraw.Draw(e, new Point(e.Location.X + 1, e.Location.Y + 1), g); //Pennor ritar så fort man rör pappret -> rita prick
                 }
+
+            }
+            else
+            {
+                ((BucketTool)selectedDraw).Draw(e, ref drawingSurface);
 
             }
         }
@@ -125,7 +130,7 @@ namespace ritboken
         // Händelsehanterare som aktiveras när användaren rör musen och ritningen pågår.
         private void pxbPapper_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing && !(this.selectedDraw is PostDrawBase)) // pen liknade verktyg ingen preview behövs
+            if (isDrawing && !(this.selectedDraw is PostDrawBase) && !(selectedDraw is BucketTool)) // pen liknade verktyg ingen preview behövs
             {
                 using (Graphics g = Graphics.FromImage(drawingSurface))
                 {
@@ -190,7 +195,7 @@ namespace ritboken
             InitializeDrawingSurface();
             using (Graphics g = Graphics.FromImage(drawingSurface))
             {
-                g.Clear(drawingModes["bucket"].color);
+                g.Clear(drawingModes["backColor"].color);
             }
             pxbPapper.Invalidate();
         }
@@ -221,7 +226,7 @@ namespace ritboken
             {
                 drawingSurface.Save(saveFileDialog.FileName + ".png", ImageFormat.Png);
             }
-            
+
         }
 
         private void squareBtn_Click(object sender, EventArgs e)
@@ -294,8 +299,9 @@ namespace ritboken
 
         private void backColorBtn_Click(object sender, EventArgs e)
         {
-            selectedDraw = drawingModes["bucket"];
+            selectedDraw = drawingModes["backColor"];
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -309,11 +315,19 @@ namespace ritboken
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            drawingSurface = (Bitmap)oldDrawingsurface.Clone();
+            if (drawingSurface != null)
+            {
+                drawingSurface = (Bitmap)oldDrawingsurface.Clone();
+
+            }
+
+
         }
 
-        
-        
+        private void bucketBtn_Click(object sender, EventArgs e)
+        {
+            selectedDraw = drawingModes["bucket"];
+        }
     }
 }
 
