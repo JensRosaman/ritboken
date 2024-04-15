@@ -54,7 +54,6 @@ namespace ritboken
             }
         }
 
-        public int Width { get { return width; } }
 
         public DrawBase(Color color, int width)
         {
