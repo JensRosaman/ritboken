@@ -13,6 +13,7 @@ using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Net.Sockets;
+using System.Diagnostics.Eventing.Reader;
 
 namespace ritboken
 {
@@ -34,11 +35,19 @@ namespace ritboken
             set
             {
                 // uppdatera färg på knapp
-                if( _selectedDraw != null && drawButtons.ContainsKey(_selectedDraw))
-                    drawButtons[_selectedDraw].BackColor = Color.Gray;
+                if (_selectedDraw != null) {
+                    if (drawButtons.ContainsKey(_selectedDraw))
+                        drawButtons[_selectedDraw].BackColor = Color.GreenYellow;
+
+                    else { 
+                        eraserBtn.BackColor = Color.GreenYellow;
+                     
+                    }
+                }
 
                 if (drawButtons.ContainsKey(value))
                     drawButtons[value].BackColor = Color.RebeccaPurple;
+
 
                 _selectedDraw = value;
                 if (syncSettings)
@@ -80,6 +89,7 @@ namespace ritboken
             InitializeComponent();
 
             drawingSurface = new Bitmap(pxbPapper.Width, pxbPapper.Height);
+            oldDrawingsurface = (Bitmap)drawingSurface.Clone();
             // intializera verktygen
             drawingModes["pen"] = new PenTool(color, penWidth);
             drawingModes["ellipse"] = new Ellipse(color, penWidth);
@@ -96,6 +106,10 @@ namespace ritboken
             drawButtons[drawingModes["bucket"]] = bucketBtn;
             drawButtons[drawingModes["backColor"]] = backColorBtn;
 
+            foreach(System.Windows.Forms.Button btn in drawButtons.Values)
+            {
+                btn.BackColor = Color.GreenYellow;
+            }
 
             // anger färg till färg knapprna
             colorbtn1.BackColor = Color.Black;
@@ -323,9 +337,9 @@ namespace ritboken
         private void eraserBtn_Click(object sender, EventArgs e)
         {
 
-            selectedDraw = new PenTool(drawingModes["bucket"].color, penWidth); // skapa ny penna sy den inte synkas med de andra inställningarna oavsett vad
-            selectedDraw.color = drawingModes["bucket"].color;
-            eraserBtn.BackColor = Color.Gray;
+            selectedDraw = new PenTool(drawingModes["bucket"].color, drawingModes["pen"].width + 10); // skapa ny penna sy den inte synkas med de andra inställningarna oavsett vad
+            selectedDraw.color = drawingModes["backColor"].color;
+            eraserBtn.BackColor = Color.GreenYellow;
         }
 
         private void backColorBtn_Click(object sender, EventArgs e)
