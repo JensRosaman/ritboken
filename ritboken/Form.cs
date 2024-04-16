@@ -12,6 +12,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.IO;
+using System.Net.Sockets;
 
 namespace ritboken
 {
@@ -21,7 +22,7 @@ namespace ritboken
         private Point previousPoint;        // Håller koll på den tidigare muspositionen för att rita linjer.
         private Bitmap drawingSurface;// Deklarera en bitmap för att lagra ritområdet
         private Bitmap oldDrawingsurface; // sparar de gamla tillståndet av bitmapen
-        private Color _color = Color.Black;
+        private Dictionary<DrawBase, System.Windows.Forms.Button> drawButtons = new Dictionary<DrawBase, System.Windows.Forms.Button>(); // gör så att ritverktygen kan kopplas samman med dess knappar
         private Dictionary<string, DrawBase> drawingModes = new Dictionary<string, DrawBase> { }; // genom att spara alla objekt så sparas även deras inställningar ex bredd osv
         private bool syncSettings = true; // synca som standard
         private int penWidth; // heter penWidth i den här klassen då det finns flera andra saker som bredd kan tyda på i den här kontexten
@@ -32,15 +33,24 @@ namespace ritboken
             get { return _selectedDraw; }
             set
             {
+                // uppdatera färg på knapp
+                if( _selectedDraw != null && drawButtons.ContainsKey(_selectedDraw))
+                    drawButtons[_selectedDraw].BackColor = Color.Gray;
+
+                if (drawButtons.ContainsKey(value))
+                    drawButtons[value].BackColor = Color.RebeccaPurple;
+
                 _selectedDraw = value;
                 if (syncSettings)
                 {
                     _selectedDraw.color = color;
                     _selectedDraw.width = penWidth;
+
+                    
                 }
             }
         }
-
+        private Color _color = Color.Black;
         private Color color
         {
             set
@@ -67,15 +77,26 @@ namespace ritboken
             this.Text = "Coolt ritprogram";
             this.DoubleBuffered = true;
             this.BackColor = Color.AliceBlue;
-
             InitializeComponent();
+
             drawingSurface = new Bitmap(pxbPapper.Width, pxbPapper.Height);
+            // intializera verktygen
             drawingModes["pen"] = new PenTool(color, penWidth);
             drawingModes["ellipse"] = new Ellipse(color, penWidth);
             drawingModes["rectangle"] = new RectangleTool(color, penWidth);
             drawingModes["line"] = new Line(color, penWidth);
             drawingModes["bucket"] = new BucketTool(color, penWidth);
             drawingModes["backColor"] = new BackgroundTool(Color.White, penWidth);
+
+            // para ihop ritverktygen till knapparna, det gör det lättare att sedan lägga till fler verktyg med denna metod
+            drawButtons[drawingModes["pen"]] = penBtn;
+            drawButtons[drawingModes["ellipse"]] = ellipseBtn;
+            drawButtons[drawingModes["rectangle"]] = rectangleBtn;
+            drawButtons[drawingModes["line"]] = LineBtn;
+            drawButtons[drawingModes["bucket"]] = bucketBtn;
+            drawButtons[drawingModes["backColor"]] = backColorBtn;
+
+
             // anger färg till färg knapprna
             colorbtn1.BackColor = Color.Black;
             colorbtn2.BackColor = Color.Blue;
@@ -225,7 +246,16 @@ namespace ritboken
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 drawingSurface.Save(saveFileDialog.FileName + ".png", ImageFormat.Png);
+
+                DialogResult result = MessageBox.Show("Fil sparad! \n Vill du öppna filsökvägen?", "Filsökväg", 
+                                                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("explorer.exe", Path.GetDirectoryName(saveFileDialog.FileName));
+                }
             }
+            
+            
 
         }
 
@@ -295,6 +325,7 @@ namespace ritboken
 
             selectedDraw = new PenTool(drawingModes["bucket"].color, penWidth); // skapa ny penna sy den inte synkas med de andra inställningarna oavsett vad
             selectedDraw.color = drawingModes["bucket"].color;
+            eraserBtn.BackColor = Color.Gray;
         }
 
         private void backColorBtn_Click(object sender, EventArgs e)
@@ -313,12 +344,11 @@ namespace ritboken
             }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void undoBtnClick(object sender, EventArgs e)
         {
             if (drawingSurface != null)
             {
                 drawingSurface = (Bitmap)oldDrawingsurface.Clone();
-
             }
 
 
