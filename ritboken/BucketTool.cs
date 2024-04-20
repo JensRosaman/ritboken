@@ -11,20 +11,20 @@ namespace ritboken
     {
         public BucketTool(Color color, int width) : base(color, width) { }
 
-        public override void Draw(MouseEventArgs e, Point prevLocation, Graphics g)
+        public override void Draw(MouseEventArgs e, Point prevLocation, Graphics g) // måste implementeras pga abstract
         {
-            
+
         }
-        public new void Draw(MouseEventArgs e, ref Bitmap bmp)
+        public new void Draw(MouseEventArgs e, ref Bitmap bmp) // skapa overload för att 
         {
-            
-            FloodFill(e.X, e.Y, bmp, bmp.GetPixel(e.X,e.Y));
-            
-        }
-        private void FloodFill(int x, int y, Bitmap bmp, Color color2Change)
-        {
+
+
+            int x = e.X;
+            int y = e.Y;
             int width = bmp.Width;
             int height = bmp.Height;
+
+            Color color2Change = bmp.GetPixel(e.X, e.Y);
 
             // Använd stack istälellet för att rekrusivt kalla på methoden för att undevika stack overflow och undevika röra cpu tråden
             Stack<Point> stack = new Stack<Point>();
@@ -34,6 +34,7 @@ namespace ritboken
             {
                 Point point = stack.Pop(); // ta den första punkten i stacken och ta kordinaterna av den för att ändra färgen av den pixeln
                 x = point.X;
+
                 y = point.Y;
 
                 if (x < 0 || x >= width || y < 0 || y >= height)
