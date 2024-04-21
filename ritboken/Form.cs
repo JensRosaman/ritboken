@@ -38,17 +38,17 @@ namespace ritboken
                 if (_selectedDraw != null)
                 {
                     if (drawButtons.ContainsKey(_selectedDraw))
-                        drawButtons[_selectedDraw].BackColor = Color.GreenYellow;
+                        drawButtons[_selectedDraw].BackColor = Color.WhiteSmoke;
 
                     else
                     {
-                        eraserBtn.BackColor = Color.GreenYellow;
+                        eraserBtn.BackColor = Color.WhiteSmoke;
 
                     }
                 }
 
                 if (drawButtons.ContainsKey(value))
-                    drawButtons[value].BackColor = Color.RebeccaPurple;
+                    drawButtons[value].BackColor = Color.DarkSlateGray;
 
 
                 _selectedDraw = value;
@@ -112,7 +112,7 @@ namespace ritboken
 
             foreach (System.Windows.Forms.Button btn in drawButtons.Values)
             {
-                btn.BackColor = Color.GreenYellow;
+                btn.BackColor = Color.WhiteSmoke;
             }
 
             // anger färg till färg knapprna
@@ -210,11 +210,6 @@ namespace ritboken
                 }
                 pxbPapper.Invalidate();
             }
-            else if (isDrawing && selectedDraw is PostDrawBase)
-            {
-                PostDrawBase pbx = (PostDrawBase)selectedDraw; // gillar det inte men den klagar annars
-                pbx.currMouseLoc = pbx.mouseDownLoc = new Point(0, 0);
-            }
             isDrawing = false; // Användaren har slutat rita och släppt musknappen
         }
 
@@ -251,14 +246,12 @@ namespace ritboken
         private void LineBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["line"];
-            change_eraserBackColor();
 
         }
 
         private void penBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["pen"];
-            change_eraserBackColor();
 
         }
 
@@ -278,25 +271,16 @@ namespace ritboken
             }
         }
 
-        private void change_eraserBackColor()
-        {
-            return;
-            if (eraserBtn.BackColor == Color.GreenYellow)
-                eraserBtn.BackColor = Color.RebeccaPurple;
-            else
-                eraserBtn.BackColor = Color.GreenYellow;
-        }
+        
 
         private void squareBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["rectangle"];
-            change_eraserBackColor();
         }
 
         private void ellipseBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["ellipse"];
-            change_eraserBackColor();
 
         }
 
@@ -389,8 +373,6 @@ namespace ritboken
         private void bucketBtn_Click(object sender, EventArgs e)
         {
             selectedDraw = drawingModes["bucket"];
-            eraserBtn.BackColor = Color.GreenYellow;
-
         }
     }
 }

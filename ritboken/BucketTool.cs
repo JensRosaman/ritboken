@@ -15,7 +15,7 @@ namespace ritboken
         {
 
         }
-        public new void Draw(MouseEventArgs e, ref Bitmap bmp) // skapa overload för att 
+        public void Draw(MouseEventArgs e, ref Bitmap bmp) // skapa overload för att 
         {
 
 

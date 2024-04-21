@@ -114,7 +114,7 @@
             // 
             bucketBtn.BackgroundImage = (Image)resources.GetObject("bucketBtn.BackgroundImage");
             bucketBtn.BackgroundImageLayout = ImageLayout.Zoom;
-            bucketBtn.Location = new Point(163, 19);
+            bucketBtn.Location = new Point(85, 19);
             bucketBtn.Name = "bucketBtn";
             bucketBtn.Size = new Size(30, 22);
             bucketBtn.TabIndex = 24;
@@ -145,18 +145,19 @@
             // penBtn
             // 
             penBtn.BackColor = Color.Gainsboro;
-            penBtn.Location = new Point(5, 19);
+            penBtn.BackgroundImage = (Image)resources.GetObject("penBtn.BackgroundImage");
+            penBtn.BackgroundImageLayout = ImageLayout.Zoom;
+            penBtn.Location = new Point(6, 18);
             penBtn.Margin = new Padding(2);
             penBtn.Name = "penBtn";
-            penBtn.Size = new Size(72, 23);
+            penBtn.Size = new Size(38, 23);
             penBtn.TabIndex = 4;
-            penBtn.Text = "Penna";
             penBtn.UseVisualStyleBackColor = false;
             penBtn.Click += penBtn_Click;
             // 
             // undoBtn
             // 
-            undoBtn.BackColor = Color.YellowGreen;
+            undoBtn.BackColor = Color.WhiteSmoke;
             undoBtn.Location = new Point(83, 46);
             undoBtn.Margin = new Padding(2);
             undoBtn.Name = "undoBtn";
@@ -191,7 +192,7 @@
             // fillShapeChckbx
             // 
             fillShapeChckbx.AutoSize = true;
-            fillShapeChckbx.Location = new Point(457, 22);
+            fillShapeChckbx.Location = new Point(379, 22);
             fillShapeChckbx.Name = "fillShapeChckbx";
             fillShapeChckbx.Size = new Size(83, 19);
             fillShapeChckbx.TabIndex = 8;
@@ -201,7 +202,7 @@
             // 
             // ellipseBtn
             // 
-            ellipseBtn.Location = new Point(195, 19);
+            ellipseBtn.Location = new Point(117, 19);
             ellipseBtn.Margin = new Padding(2);
             ellipseBtn.Name = "ellipseBtn";
             ellipseBtn.Size = new Size(68, 22);
@@ -223,7 +224,7 @@
             // 
             // rectangleBtn
             // 
-            rectangleBtn.Location = new Point(268, 19);
+            rectangleBtn.Location = new Point(190, 19);
             rectangleBtn.Margin = new Padding(2);
             rectangleBtn.Name = "rectangleBtn";
             rectangleBtn.Size = new Size(69, 23);
@@ -234,11 +235,12 @@
             // 
             // eraserBtn
             // 
-            eraserBtn.Location = new Point(82, 19);
+            eraserBtn.BackgroundImage = (Image)resources.GetObject("eraserBtn.BackgroundImage");
+            eraserBtn.BackgroundImageLayout = ImageLayout.Zoom;
+            eraserBtn.Location = new Point(49, 18);
             eraserBtn.Name = "eraserBtn";
-            eraserBtn.Size = new Size(75, 22);
+            eraserBtn.Size = new Size(30, 22);
             eraserBtn.TabIndex = 16;
-            eraserBtn.Text = "Sudd";
             eraserBtn.UseVisualStyleBackColor = true;
             eraserBtn.Click += eraserBtn_Click;
             // 
@@ -268,7 +270,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(604, 52);
+            label1.Location = new Point(604, 54);
             label1.Name = "label1";
             label1.Size = new Size(43, 15);
             label1.TabIndex = 14;
@@ -277,7 +279,7 @@
             // roundEdgesChckbx
             // 
             roundEdgesChckbx.AutoSize = true;
-            roundEdgesChckbx.Location = new Point(356, 21);
+            roundEdgesChckbx.Location = new Point(278, 21);
             roundEdgesChckbx.Name = "roundEdgesChckbx";
             roundEdgesChckbx.Size = new Size(96, 19);
             roundEdgesChckbx.TabIndex = 14;
@@ -305,7 +307,7 @@
             // 
             // clearBtn
             // 
-            clearBtn.BackColor = Color.YellowGreen;
+            clearBtn.BackColor = Color.WhiteSmoke;
             clearBtn.Location = new Point(276, 46);
             clearBtn.Margin = new Padding(2);
             clearBtn.Name = "clearBtn";
@@ -329,7 +331,7 @@
             syncChckbx.AutoSize = true;
             syncChckbx.Checked = true;
             syncChckbx.CheckState = CheckState.Checked;
-            syncChckbx.Location = new Point(549, 22);
+            syncChckbx.Location = new Point(471, 22);
             syncChckbx.Name = "syncChckbx";
             syncChckbx.Size = new Size(125, 19);
             syncChckbx.TabIndex = 15;
